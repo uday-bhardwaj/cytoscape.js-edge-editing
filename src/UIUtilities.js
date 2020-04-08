@@ -13,7 +13,8 @@ module.exports = function (params, cy) {
   var lastPanningEnabled, lastZoomingEnabled, lastBoxSelectionEnabled;
   // status of edge to highlight bends and selected edges
   var edgeToHighlightBends, numberOfSelectedEdges;
-  
+  var weakMap = new WeakMap();
+  var cyedgebendediting ={};
   var functions = {
     init: function () {
       // register undo redo functions
@@ -21,10 +22,10 @@ module.exports = function (params, cy) {
       
       var self = this;
       var opts = params;
-      var $container = $(this);
-      var $canvas = $('<canvas></canvas>');
-
-      $container.append($canvas);
+      var $container = this;
+      var $canvas = document.createElement("canvas");
+  
+        $container.appendChild($canvas);
 
       var cxtAddBendPointFcn = function (event) {
         var edge = event.target || event.cyTarget;
@@ -106,26 +107,36 @@ module.exports = function (params, cy) {
       
       var _sizeCanvas = debounce(function () {
         $canvas
-          .attr('height', $container.height())
-          .attr('width', $container.width())
-          .css({
-            'position': 'absolute',
-            'top': 0,
-            'left': 0,
-            'z-index': options().zIndex
-          })
-        ;
+            .setAttribute('height', $container.offsetHeight);
+            $canvas.setAttribute('width', $container.offsetWidth);
+  
+            $canvas.style.position= "absolute";
+            $canvas.style.top= 0;
+            $canvas.style.left= 0;
+            $canvas.style.zIndex= options().zIndex;
+            
+          ;
 
         setTimeout(function () {
-          var canvasBb = $canvas.offset();
-          var containerBb = $container.offset();
+          //var canvasBb = $canvas.offset();
+          var rectCanvas = $canvas.getBoundingClientRect();
 
-          $canvas
-            .css({
-              'top': -(canvasBb.top - containerBb.top),
-              'left': -(canvasBb.left - containerBb.left)
-            })
-          ;
+          var canvasBb = { 
+              top: rectCanvas.top + window.scrollY, 
+              left: rectCanvas.left + window.scrollX, 
+          };
+          //var containerBb = $container.offset();
+
+          var rectContainer = $container.getBoundingClientRect();
+
+          var containerBb = { 
+              top: rectContainer.top + window.scrollY, 
+              left: rectContainer.left + window.scrollX, 
+          };
+          //var containerBb = $container.offset();
+
+          $canvas.style.top = -(canvasBb.top - containerBb.top);
+          $canvas.style.top = -(canvasBb.left - containerBb.left);
 
           // redraw on canvas resize
           if(cy){
@@ -141,14 +152,14 @@ module.exports = function (params, cy) {
 
       sizeCanvas();
 
-      $(window).bind('resize', function () {
+      window.addEventListener('resize', function () {
         sizeCanvas();
       });
 
       var ctx = $canvas[0].getContext('2d');
 
       // write options to data
-      var data = $container.data('cyedgebendediting');
+      var data = weakMap.get(cyedgebendediting);
       if (data == null) {
         data = {};
       }
@@ -157,7 +168,7 @@ module.exports = function (params, cy) {
       var optCache;
 
       function options() {
-        return optCache || (optCache = $container.data('cyedgebendediting').options);
+        return optCache || (optCache = weakMap.get(cyedgebendediting).options);
       }
 
       // we will need to convert model positons to rendered positions
@@ -176,8 +187,8 @@ module.exports = function (params, cy) {
       
       function refreshDraws() {
 
-        var w = $container.width();
-        var h = $container.height();
+        var w = $container.offsetWidth;
+        var h = $container.offsetHeight;
 
         ctx.clearRect(0, 0, w, h);
         
@@ -1221,12 +1232,12 @@ module.exports = function (params, cy) {
   };
   //var $ = require('jquery'); //Need to check dependancy
   if (functions[fn]) {
-    return functions[fn].apply($(cy.container()), Array.prototype.slice.call(arguments, 1));
+    return functions[fn].apply(cy.container(), Array.prototype.slice.call(arguments, 1));
   } else if (typeof fn == 'object' || !fn) {
-    return functions.init.apply($(cy.container()), arguments);
+    return functions.init.apply(cy.container(), arguments);
   } else {
-    $.error('No such function `' + fn + '` for cytoscape.js-edge-editing');
+    console.error('No such function `' + fn + '` for cytoscape.js-edge-editing');
   }
 
-  return $(this);
+  return this;
 };
