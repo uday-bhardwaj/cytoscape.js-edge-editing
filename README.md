@@ -21,12 +21,12 @@ U. Dogrusoz , A. Karacelik, I. Safarli, H. Balci, L. Dervishi, and M.C. Siper, "
 
 ## Demo
 
-Click [here](https://ivis-at-bilkent.github.io/cytoscape.js-edge-editing/demo.html) for demo
+Click [here](https://uday-bhardwaj.github.io/cytoscape.js-edge-editing/demo.html) for demo
 
 ## Dependencies
 
  * Cytoscape.js ^3.3.0
- * jQuery ^1.7.0 || ^2.0.0 || ^3.0.0
+ * No jQuery 
  * cytoscape-undo-redo.js(optional) ^1.0.1
  * cytoscape-context-menus.js(optional) ^2.0.0
 
@@ -43,10 +43,10 @@ Download the library:
 CommonJS:
 ```js
 var cytoscape = require('cytoscape');
-var jquery = require('jquery');
+//var jquery = require('jquery');
 var edgeEditing = require('cytoscape-edge-editing');
 
-edgeEditing( cytoscape, jquery ); // register extension
+edgeEditing( cytoscape ); // register extension
 ```
 
 AMD:
@@ -139,8 +139,11 @@ This project is set up to automatically be published to npm and bower.  To publi
 
 1. Set the version number environment variable: `export VERSION=1.2.3`
 1. Publish: `gulp publish`
-1. If publishing to bower for the first time, you'll need to run `bower register cytoscape-edge-editing https://github.com/iVis-at-Bilkent/cytoscape.js-edge-editing.git`
+1. If publishing to bower for the first time, you'll need to run `bower register cytoscape-edge-editing-no-jquqry https://github.com/uday-bhardwaj/cytoscape.js-edge-editing.git`
+
+## Modified by 
+
+* [Uday Bhardwaj](https://github.com/uday-bhardwaj)
 
 ## Team
-
   * [Metin Can Siper](https://github.com/metincansiper), [Ahmet Candiroglu](https://github.com/ahmetcandiroglu), [Ugur Dogrusoz](https://github.com/ugurdogrusoz) of [i-Vis at Bilkent University](http://www.cs.bilkent.edu.tr/~ivis)
