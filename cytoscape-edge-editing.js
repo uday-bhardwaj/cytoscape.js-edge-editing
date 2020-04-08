@@ -271,7 +271,7 @@ module.exports = function (params, cy) {
           x: edge_pts[edge_pts.length-4],
           y: edge_pts[edge_pts.length-3]
         }
-        var length = getBendShapesLength(edge) * 0.65;
+        var length = getBendShapesLength(edge) * 1.5;
 
         var oldStroke = ctx.strokeStyle;
         var oldWidth = ctx.lineWidth;
@@ -615,7 +615,35 @@ module.exports = function (params, cy) {
           refreshDraws();
         });
         
-        cy.on('select', 'edge', eSelect = function () {
+        // cy.on('select', 'edge', eSelect = function () {
+        //   var edge = this;
+
+        //   if(edge.target().connectedEdges().length == 0 || edge.source().connectedEdges().length == 0){
+        //     return;
+        //   }
+
+         
+        //   numberOfSelectedEdges = numberOfSelectedEdges + 1;
+          
+        //   cy.startBatch();
+            
+        //   if (edgeToHighlightBends) {
+        //     edgeToHighlightBends.removeClass('cy-edge-bend-editing-highlight-bends');
+        //   }
+            
+        //   if (numberOfSelectedEdges === 1) {
+        //     edgeToHighlightBends = edge;
+        //     edgeToHighlightBends.addClass('cy-edge-bend-editing-highlight-bends');
+        //   }
+        //   else {
+        //     edgeToHighlightBends = undefined;
+        //   }
+          
+        //   cy.endBatch();
+        //   refreshDraws();
+        // });
+
+        cy.on('mouseover', 'edge', eSelect = function () {
           var edge = this;
 
           if(edge.target().connectedEdges().length == 0 || edge.source().connectedEdges().length == 0){
@@ -642,8 +670,8 @@ module.exports = function (params, cy) {
           cy.endBatch();
           refreshDraws();
         });
-        
-        cy.on('unselect', 'edge', eUnselect = function () {
+
+        cy.on('mouseout', 'edge', eUnselect = function () {
           numberOfSelectedEdges = numberOfSelectedEdges - 1;
             
           cy.startBatch();
@@ -672,6 +700,37 @@ module.exports = function (params, cy) {
           cy.endBatch();
           refreshDraws();
         });
+
+        
+        // cy.on('unselect', 'edge', eUnselect = function () {
+        //   numberOfSelectedEdges = numberOfSelectedEdges - 1;
+            
+        //   cy.startBatch();
+            
+        //   if (edgeToHighlightBends) {
+        //     edgeToHighlightBends.removeClass('cy-edge-bend-editing-highlight-bends');
+        //   }
+            
+        //   if (numberOfSelectedEdges === 1) {
+        //     var selectedEdges = cy.edges(':selected');
+            
+        //     // If user unselects all edges by tapping to the core etc. then our 'numberOfSelectedEdges'
+        //     // may be misleading. Therefore we need to check if the number of edges to highlight is realy 1 here.
+        //     if (selectedEdges.length === 1) {
+        //       edgeToHighlightBends = selectedEdges[0];
+        //       edgeToHighlightBends.addClass('cy-edge-bend-editing-highlight-bends');
+        //     }
+        //     else {
+        //       edgeToHighlightBends = undefined;
+        //     }
+        //   }
+        //   else {
+        //     edgeToHighlightBends = undefined;
+        //   }
+          
+        //   cy.endBatch();
+        //   refreshDraws();
+        // });
         
         var movedBendIndex;
         var movedBendEdge;
@@ -859,7 +918,7 @@ module.exports = function (params, cy) {
                 var newSource = (movedEndPoint == 0) ? nodeToAttach : edge.source();
                 var newTarget = (movedEndPoint == 1) ? nodeToAttach : edge.target();
                 if(typeof validateEdge === "function")
-                  isValid = validateEdge(edge, newSource, newTarget);
+                  isValid = validateEdge(edge, newSource, newTarget, detachedNode,location);
                 newNode = (isValid === 'valid') ? nodeToAttach : detachedNode;
               }
 
@@ -870,7 +929,7 @@ module.exports = function (params, cy) {
               if(detachedNode.id() !== newNode.id()){
                 // use given handleReconnectEdge function 
                 if(typeof handleReconnectEdge === 'function'){
-                  var reconnectedEdge = handleReconnectEdge(newSource.id(), newTarget.id(), edge.data());
+                  var reconnectedEdge = handleReconnectEdge(newSource, newTarget, edge,detachedNode,location);
                   
                   if(reconnectedEdge){
                     reconnectionUtilities.copyEdge(edge, reconnectedEdge);
@@ -911,7 +970,7 @@ module.exports = function (params, cy) {
               if(isValid !== 'valid' && typeof actOnUnsuccessfulReconnection === 'function'){
                 actOnUnsuccessfulReconnection();
               }
-             edge.select();
+             //edge.select();
               cy.remove(dummyNode);
             }
           }
@@ -1161,7 +1220,7 @@ module.exports = function (params, cy) {
         cy.unbind("zoom pan", eZoom);
     }
   };
-
+  //var $ = require('jquery'); //Need to check dependancy
   if (functions[fn]) {
     return functions[fn].apply($(cy.container()), Array.prototype.slice.call(arguments, 1));
   } else if (typeof fn == 'object' || !fn) {
