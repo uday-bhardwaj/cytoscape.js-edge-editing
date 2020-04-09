@@ -278,7 +278,7 @@ module.exports = function (params, cy) {
           x: edge_pts[edge_pts.length-4],
           y: edge_pts[edge_pts.length-3]
         }
-        var length = getBendShapesLength(edge) * 1.5; //Changed from 0.65
+        var length = getBendShapesLength(edge) * 0.65;
 
         var oldStroke = ctx.strokeStyle;
         var oldWidth = ctx.lineWidth;
