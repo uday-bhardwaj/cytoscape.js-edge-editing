@@ -978,7 +978,7 @@ module.exports = function (params, cy) {
 
               // invalid edge reconnection callback
               if(isValid !== 'valid' && typeof actOnUnsuccessfulReconnection === 'function'){
-                actOnUnsuccessfulReconnection();
+                actOnUnsuccessfulReconnection(newSource, newTarget, edge,detachedNode,location);
               }
              //edge.select();
               cy.remove(dummyNode);
