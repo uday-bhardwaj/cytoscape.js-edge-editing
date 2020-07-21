@@ -1208,8 +1208,17 @@ module.exports = function (params, cy) {
           bendPointsMoving = false;
 
       }
-      document.addEventListener("keydown",keyDown, true);
-      document.addEventListener("keyup",keyUp, true);
+	//Removed listeners from window document
+      if(opts && opts.container)
+      {
+          [...document.querySelectorAll(opts.container)].forEach( el =>{ 
+            el.addEventListener("keydown",keyDown, true);
+            el.addEventListener("keyup",keyUp, true);
+          });
+      } else {
+        cy._private.container.addEventListener("keydown",keyDown, true);
+        cy._private.container.addEventListener("keyup",keyUp, true);
+      }
 
       cyedgebendediting= {"cyedgebendediting":"cyedgebendediting"};
       weakMap.set(cyedgebendediting,data);
